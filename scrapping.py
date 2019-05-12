@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup as soup
 import time
+import numpy as np
+import pandas as pd
 
 def Countries():
 
@@ -41,21 +43,19 @@ def Cities(country):
     return cities
 
 def City(city):
-    weather = {'names':list(),'days':list(),'temperatures':{'time':tuple(),'temp':list(tuple())}}
+    weather = {'names':list(),'days':list(),'temperatures':{'time':tuple('AM','PM','NIGHT'),'HighTemp':list(tuple()),'LowTemp':list(tuple())}}
 
     url = requests.get(city['link'])
     page = soup(url.content, 'html.parser')
 
     names = page.findAll('span',{'class':'b-forecast__table-days-name'})
     days = page.findAll('span',{'class':'b-forecast__table-days-date'})
-    times = page.findAll('span',{'class':'b-forecast__table-value'})
     temps = page.findAll('span',{'class':'temp b-forecast__table-value'})
 
     print('names : {0}'.format(len(names)))
     print('days : {0}'.format(len(days)))
-    print('times : {0}'.format(len(times)))
     print('temps : {0}'.format(len(temps)))
-
+    print(temps)
 
 def main():
     countries = Countries()
@@ -64,7 +64,7 @@ def main():
     cities = Cities(country)
     city = {'city':cities['city'][0],'link':cities['link'][0]}
     time.sleep(5)
-    # city = {'city':'cairo','link':'https://www.weather-forecast.com/locations/Cairo/forecasts/latest'}
+    print(city)
     weather = City(city)
 
 
