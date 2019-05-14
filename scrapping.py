@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as soup
 import time
-import numpy as np
 import pandas as pd
 
 def Countries():
@@ -42,7 +41,6 @@ def Cities(country):
     return cities
 
 def City(city):
-    # weather = {'names':list(),'days':list(),'temperatures':{'time':tuple('AM','PM','NIGHT'),'HighTemp':list(tuple()),'LowTemp':list(tuple())}}
     weather = pd.DataFrame(columns=['days','dates','time','HighTemp','LowTemp'])
     url = requests.get(city['link'])
     page = soup(url.content, 'html.parser')
@@ -53,7 +51,6 @@ def City(city):
     temps = page.findAll('span',{'class':'temp b-forecast__table-value'})
 
     for count in range(len(days)):
-        print(days[count].text)
         for wcount in  range(len(times)):
             mycount = (count*3)+wcount
             weather.loc[mycount]=[
