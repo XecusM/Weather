@@ -16,46 +16,56 @@ def Countries():
 
     containers = page.findAll('div',{'class':'mapctrytab-cont'})
 
-    countries = {'country':list(),'link':list()}
-
+    countries = pd.DataFrame(columns=['country','link'])
+    counter = 0
     for con in containers:
         links = con.findAll('a')
         for link in links:
-            countries['country'].append(link.text)
-            countries['link'].append('https://www.weather-forecast.com'+link['href'])
+            countries.loc[counter] = [link.text,'https://www.weather-forecast.com{0}'.format(link['href'])]
+            counter += 1
+
     print('Countries Page has scrapped successfully')
     return countries
 
 def Cities(country):
-    cities = {'city':list(),'link':list()}
-
+    cities = pd.DataFrame(columns=['city','link'])
     url = requests.get(country['link'])
-
     page = soup(url.content, 'html.parser')
     section = page.findAll('section',{'class':'b-wrapper'})
     links = section[0].findAll('a')
-
+    counter = 0
     for link in links:
-        cities['city'].append(link.text)
-        cities['link'].append('https://www.weather-forecast.com'+link['href'])
+        cities.loc[counter] = [link.text,'https://www.weather-forecast.com{0}'.format(link['href'])]
+        counter +=1
 
     print('Cities Page has scrapped successfully')
     return cities
 
 def City(city):
-    weather = {'names':list(),'days':list(),'temperatures':{'time':tuple('AM','PM','NIGHT'),'HighTemp':list(tuple()),'LowTemp':list(tuple())}}
-
+    # weather = {'names':list(),'days':list(),'temperatures':{'time':tuple('AM','PM','NIGHT'),'HighTemp':list(tuple()),'LowTemp':list(tuple())}}
+    weather = pd.DataFrame(columns=['days','dates','time','HighTemp','LowTemp'])
     url = requests.get(city['link'])
     page = soup(url.content, 'html.parser')
 
-    names = page.findAll('span',{'class':'b-forecast__table-days-name'})
-    days = page.findAll('span',{'class':'b-forecast__table-days-date'})
+    days = page.findAll('span',{'class':'b-forecast__table-days-name'})
+    times = ['AM','PM','NIGHT']
+    dates = page.findAll('span',{'class':'b-forecast__table-days-date'})
     temps = page.findAll('span',{'class':'temp b-forecast__table-value'})
 
-    print('names : {0}'.format(len(names)))
-    print('days : {0}'.format(len(days)))
-    print('temps : {0}'.format(len(temps)))
-    print(temps)
+    for count in range(len(days)):
+        print(days[count].text)
+        for wcount in  range(len(times)):
+            mycount = (count*3)+wcount
+            weather.loc[mycount]=[
+                    days[count].text,
+                    dates[count].text,
+                    times[wcount],
+                    temps[mycount].text,
+                    temps[mycount+len(days)*3].text
+                    ]
+
+    print('Weather Page has scrapped successfully')
+    return weather
 
 def main():
     countries = Countries()
@@ -64,7 +74,6 @@ def main():
     cities = Cities(country)
     city = {'city':cities['city'][0],'link':cities['link'][0]}
     time.sleep(5)
-    print(city)
     weather = City(city)
 
 
