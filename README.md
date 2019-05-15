@@ -1,5 +1,5 @@
 # Weather
-__*Scrapping weather details for the selected region and time*__
+__*Scrapping weather details for the selected country and city*__
 
 **https://www.weather-forecast.com**
 
