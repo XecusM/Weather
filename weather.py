@@ -64,6 +64,12 @@ app.layout = html.Div([
         )], style={'width':'90%', 'float':'center'}),
 ])
 
+@app.callback(Output('city-id','options'),[Input('country-id','value')])
+def cities_options(SelectedCountry):
+    GetCountry = {'country':countries.loc[SelectedCountry],'link':countries.loc[:,SelectedCountry]['link']}
+    cities = scrapping.Cities(GetCountry)
+    return [{'label': i, 'value': i} for i in cities['city']]
+
 
 if __name__ == '__main__':
     app.run_server()
