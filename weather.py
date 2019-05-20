@@ -14,10 +14,10 @@ import scrapping
 
 countries = scrapping.Countries()
 country = {'country':countries['country'][0],'link':countries['link'][0]}
-time.sleep(5)
+time.sleep(1)
 cities = scrapping.Cities(country)
 city = {'city':cities['city'][0],'link':cities['link'][0]}
-time.sleep(5)
+time.sleep(1)
 weather = scrapping.City(city)
 
 app = dash.Dash()
@@ -39,6 +39,7 @@ app.layout = html.Div([
         html.Div([
             html.Button(
                 id='submit-button',
+                n_clicks=0,
                 children='Submit',
                 style={'fontSize':28}
             )], style={'width': '30%', 'display': 'inline-block'}),
@@ -63,13 +64,24 @@ app.layout = html.Div([
             }
         )], style={'width':'90%', 'float':'center'}),
 ])
-
 @app.callback(Output('city-id','options'),[Input('country-id','value')])
 def cities_options(SelectedCountry):
-    GetCountry = {'country':countries.loc[SelectedCountry],'link':countries.loc[:,SelectedCountry]['link']}
+    global cities
+    GetCountry = {'country':SelectedCountry,
+            'link':countries['link'][countries.loc[countries.country==SelectedCountry].index[0]]}
     cities = scrapping.Cities(GetCountry)
     return [{'label': i, 'value': i} for i in cities['city']]
 
+@app.callback(Output('city-id','value'),[Input('city-id','options')])
+def cities_value(SelectedCities):
+    return cities['city'][0]
+
+@app.callback(
+    Output('weather-plot', 'figure'),
+    [Input('submit-button', 'n_clicks')],
+    [State('city-id', 'value')])
+def update_graph(SelectedCity):
+    
 
 if __name__ == '__main__':
     app.run_server()
