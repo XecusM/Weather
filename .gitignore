@@ -21,9 +21,3 @@ pip-delete-this-directory.txt
 venv/
 ENV/
 .vscode
-
-# mypy
-.mypy_cache/
-
-.DS_Store
-*.sqlite3
